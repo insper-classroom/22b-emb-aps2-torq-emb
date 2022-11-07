@@ -2268,10 +2268,19 @@
     <Compile Include="src\config\conf_touch.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\images\Tela1PropostaB.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\images\Tela1PropostaC.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\images\Tela2PropostaB.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\images\Tela2PropostaC.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\images\Tela3PropostaB.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\images\Tela3PropostaC.h">

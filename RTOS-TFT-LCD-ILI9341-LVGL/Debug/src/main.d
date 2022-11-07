@@ -412,7 +412,9 @@ src/main.d src/main.o: ../src/main.c ../src/asf.h \
  ../src/ASF/thirdparty/lvgl8/src/extra/libs/rlottie/lv_rlottie.h \
  ../src/ASF/thirdparty/lvgl8/src/extra/libs/rlottie/../../../lvgl.h \
  ../src/touch/touch.h ../src/images/Tela1PropostaC.h \
- ../src/images/Tela2PropostaC.h ../src/images/Tela3PropostaC.h
+ ../src/images/Tela2PropostaC.h ../src/images/Tela3PropostaC.h \
+ ../src/images/Tela1PropostaB.h ../src/images/Tela2PropostaB.h \
+ ../src/images/Tela3PropostaB.h
 
 ../src/asf.h:
 
@@ -1265,3 +1267,9 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 ../src/images/Tela2PropostaC.h:
 
 ../src/images/Tela3PropostaC.h:
+
+../src/images/Tela1PropostaB.h:
+
+../src/images/Tela2PropostaB.h:
+
+../src/images/Tela3PropostaB.h:

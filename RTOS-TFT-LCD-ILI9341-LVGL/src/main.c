@@ -10,6 +10,9 @@
 #include "images/Tela1PropostaC.h"
 #include "images/Tela2PropostaC.h"
 #include "images/Tela3PropostaC.h"
+#include "images/Tela1PropostaB.h"
+#include "images/Tela2PropostaB.h"
+#include "images/Tela3PropostaB.h"
 
 /************************************************************************/
 /* LCD / LVGL                                                           */
@@ -88,7 +91,7 @@ void lv_ex_btn_1(void) {
 // 	lv_label_set_text(label, "Toggle");
 // 	lv_obj_center(label);
 	lv_obj_t * img = lv_img_create(lv_scr_act());
-	lv_img_set_src(img,&Tela3PropostaC);
+	lv_img_set_src(img,&Tela3PropostaB);
 	lv_obj_align(img, LV_ALIGN_CENTER, 0, 0);
 }
 
