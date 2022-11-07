@@ -7,13 +7,16 @@
 #include "ili9341.h"
 #include "lvgl.h"
 #include "touch/touch.h"
+#include "images/Tela1PropostaC.h"
+#include "images/Tela2PropostaC.h"
+#include "images/Tela3PropostaC.h"
 
 /************************************************************************/
 /* LCD / LVGL                                                           */
 /************************************************************************/
 
-#define LV_HOR_RES_MAX          (320)
-#define LV_VER_RES_MAX          (240)
+#define LV_HOR_RES_MAX          (240)
+#define LV_VER_RES_MAX          (320)
 
 /*A static or global variable to store the buffers*/
 static lv_disp_draw_buf_t disp_buf;
@@ -65,25 +68,28 @@ static void event_handler(lv_event_t * e) {
 }
 
 void lv_ex_btn_1(void) {
-	lv_obj_t * label;
-
-	lv_obj_t * btn1 = lv_btn_create(lv_scr_act());
-	lv_obj_add_event_cb(btn1, event_handler, LV_EVENT_ALL, NULL);
-	lv_obj_align(btn1, LV_ALIGN_CENTER, 0, -40);
-
-	label = lv_label_create(btn1);
-	lv_label_set_text(label, "Corsi");
-	lv_obj_center(label);
-
-	lv_obj_t * btn2 = lv_btn_create(lv_scr_act());
-	lv_obj_add_event_cb(btn2, event_handler, LV_EVENT_ALL, NULL);
-	lv_obj_align(btn2, LV_ALIGN_CENTER, 0, 40);
-	lv_obj_add_flag(btn2, LV_OBJ_FLAG_CHECKABLE);
-	lv_obj_set_height(btn2, LV_SIZE_CONTENT);
-
-	label = lv_label_create(btn2);
-	lv_label_set_text(label, "Toggle");
-	lv_obj_center(label);
+// 	lv_obj_t * label;
+// 
+// 	lv_obj_t * btn1 = lv_btn_create(lv_scr_act());
+// 	lv_obj_add_event_cb(btn1, event_handler, LV_EVENT_ALL, NULL);
+// 	lv_obj_align(btn1, LV_ALIGN_CENTER, 0, -40);
+// 
+// 	label = lv_label_create(btn1);
+// 	lv_label_set_text(label, "Corsi");
+// 	lv_obj_center(label);
+// 
+// 	lv_obj_t * btn2 = lv_btn_create(lv_scr_act());
+// 	lv_obj_add_event_cb(btn2, event_handler, LV_EVENT_ALL, NULL);
+// 	lv_obj_align(btn2, LV_ALIGN_CENTER, 0, 40);
+// 	lv_obj_add_flag(btn2, LV_OBJ_FLAG_CHECKABLE);
+// 	lv_obj_set_height(btn2, LV_SIZE_CONTENT);
+// 
+// 	label = lv_label_create(btn2);
+// 	lv_label_set_text(label, "Toggle");
+// 	lv_obj_center(label);
+	lv_obj_t * img = lv_img_create(lv_scr_act());
+	lv_img_set_src(img,&Tela3PropostaC);
+	lv_obj_align(img, LV_ALIGN_CENTER, 0, 0);
 }
 
 /************************************************************************/
@@ -155,8 +161,8 @@ void my_input_read(lv_indev_drv_t * drv, lv_indev_data_t*data) {
 	else
 		data->state = LV_INDEV_STATE_RELEASED; 
 	
-	data->point.x = px;
-	data->point.y = py;
+	data->point.x = py;
+	data->point.y = 320-px;
 }
 
 void configure_lvgl(void) {
@@ -190,6 +196,7 @@ int main(void) {
 
 	/* LCd, touch and lvgl init*/
 	configure_lcd();
+	ili9341_set_orientation(ILI9341_FLIP_Y | ILI9341_SWITCH_XY);
 	configure_touch();
 	configure_lvgl();
 

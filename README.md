@@ -10,12 +10,13 @@ Mais detalhes no site da disciplina:
 
 Integrantes:
 
-- Nome 
-- Nome
+- Pedro Altobelli Teixeira Pinto 
+- Willian Kenzo
+- Arthur Carvalho
 
 Nome da marca:
 
-- Nome e logo?
+<img src="imgs/Simbolo.png"/>
 
 ## Interface
 
@@ -31,8 +32,28 @@ Nome da marca:
 Descricão da primeira proposta da interface:
 
 - Imagem da proposta
+    - Tela 1:
+    
+        <img src="imgs/Tela1PropostaC.png"/>
+    - Tela 2:
+    
+        <img src="imgs/Tela2PropostaC.png"/>
+    - Tela 3:
+        
+        <img src="imgs/Tela3PropostaC.png"/>
 - Imagem da proposta no LCD
-- Vídeo explicando a interface
+    - Tela 1:
+        
+        <img src="imgs/Tela1LCDPropostaC.png"/>
+    - Tela 2:
+        
+        <img src="imgs/Tela2LCDPropostaC.png"/>
+    - Tela 3:
+        
+        <img src="imgs/Tela3LCDPropostaC.png"/>
+- Vídeo explicando a interface:
+    [This is an external link to genome.gov](https://www.genome.gov/)
+
 
 ### Proposta UX 2 - B
 
@@ -50,7 +71,18 @@ Detalhes da segunda interação da proposta de interface:
 -->
 
 - Imagem da proposta
+    - Tela 1:
+    
+        <img src="imgs/Tela1PropostaB.png"/>
+    - Tela 2:
+    
+        <img src="imgs/Tela2PropostaB.png"/>
+    - Tela 3:
+        
+        <img src="imgs/Tela3PropostaB.png"/>
 - Imagem da proposta no LCD
+    - Vídeo da entrevista com o Luis do Fablab
+    - Vídeo atualizado explicando o que foi sugerido e o que fizemos para melhorar a interface:
 - Vídeo
 
 ### Proposta UX 3 - A
