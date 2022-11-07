@@ -32,22 +32,16 @@ Nome da marca:
 Descricão da primeira proposta da interface:
 
 - Imagem da proposta
-        
-        - 
+         
             | Tela 1  | Tela 2 | Tela 3  |     
             | ------------- | ------------- | ------------- |
             | <img src="imgs/Tela1PropostaC.PNG"/>  | <img src="imgs/Tela2PropostaC.PNG"/>  | <img src="imgs/Tela3PropostaC.PNG"/> |
         
 - Imagem da proposta no LCD
-    - Tela 1:
         
-        <img src="imgs/Tela1LCDPropostaC.png"/>
-    - Tela 2:
-        
-        <img src="imgs/Tela2LCDPropostaC.png"/>
-    - Tela 3:
-        
-        <img src="imgs/Tela3LCDPropostaC.png"/>
+            | Tela 1  | Tela 2 | Tela 3  |     
+            | ------------- | ------------- | ------------- |
+            | <img src="imgs/Tela3LCDPropostaC.png"/> |  <img src="imgs/Tela2LCDPropostaC.png"/>  | <img src="imgs/Tela1LCDPropostaC.png"/> |
 - Vídeo explicando a interface:
     [This is an external link to genome.gov](https://www.genome.gov/)
 
