@@ -47,17 +47,16 @@ Descricão da primeira proposta da interface:
 </table>
         
 - Imagem da proposta no LCD
-        
+<table>
   <tr>
    <td> Tela 1: </td>
     <td> Tela 2: </td>
      <td> Tela 3: </td>
    </tr> 
   <tr>
-    <td> <img src="imgs/Tela1LCDPropostaC.PNG"  alt="1" width = 240px height = 320px ></td>
-
-    <td> <img src="imgs/Tela2LCDPropostaC.PNG" alt="2" width = 240px height = 320px></td>
-     <td> <img src="imgs/Tela3LCDPropostaC.PNG" alt="3" width = 240px height = 320px></td>
+    <td> <img src="imgs/Tela1LCDPropostaC.png"  alt="1" width = 240px height = 320px ></td>
+    <td> <img src="imgs/Tela2LCDPropostaC.png" alt="2" width = 240px height = 320px></td>
+     <td> <img src="imgs/Tela3LCDPropostaC.png" alt="3" width = 240px height = 320px></td>
    </tr> 
 </table>
 - Vídeo explicando a interface:
@@ -76,7 +75,7 @@ Descricão da primeira proposta da interface:
 
 - ####Fonte
 
-A fonte escolhida foi a *Museo Slab*, uma fonte com serifa 
+A fonte escolhida foi a *Museo Slab*, uma fonte com serifa para um visual mais clássico que não prejudica a leitura, além disso foi escolhida uma fonte com um tamanho que não impede a visualização da tela pelo ciclista durante seu trajeto, mesmo se estiver em uma velocidade elevada
 
 Detalhes da segunda interação da proposta de interface:
 
