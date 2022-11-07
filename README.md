@@ -32,16 +32,34 @@ Nome da marca:
 Descricão da primeira proposta da interface:
 
 - Imagem da proposta
-         
-            | Tela 1  | Tela 2 | Tela 3  |     
-            | ------------- | ------------- | ------------- |
-            | <img src="imgs/Tela1PropostaC.PNG"/>  | <img src="imgs/Tela2PropostaC.PNG"/>  | <img src="imgs/Tela3PropostaC.PNG"/> |
+            
+ <table>
+  <tr>
+   <td> Tela 1: </td>
+    <td> Tela 2: </td>
+     <td> Tela 3: </td>
+   </tr> 
+  <tr>
+    <td> <img src="imgs/Tela1PropostaC.PNG"  alt="1" width = 240px height = 320px ></td>
+    <td> <img src="imgs/Tela2PropostaC.PNG" alt="2" width = 240px height = 320px></td>
+     <td> <img src="imgs/Tela3PropostaC.PNG" alt="3" width = 240px height = 320px></td>
+   </tr> 
+</table>
         
 - Imagem da proposta no LCD
         
-            | Tela 1  | Tela 2 | Tela 3  |     
-            | ------------- | ------------- | ------------- |
-            | <img src="imgs/Tela3LCDPropostaC.png"/> |  <img src="imgs/Tela2LCDPropostaC.png"/>  | <img src="imgs/Tela1LCDPropostaC.png"/> |
+  <tr>
+   <td> Tela 1: </td>
+    <td> Tela 2: </td>
+     <td> Tela 3: </td>
+   </tr> 
+  <tr>
+    <td> <img src="imgs/Tela1LCDPropostaC.PNG"  alt="1" width = 240px height = 320px ></td>
+
+    <td> <img src="imgs/Tela2LCDPropostaC.PNG" alt="2" width = 240px height = 320px></td>
+     <td> <img src="imgs/Tela3LCDPropostaC.PNG" alt="3" width = 240px height = 320px></td>
+   </tr> 
+</table>
 - Vídeo explicando a interface:
     [This is an external link to genome.gov](https://www.genome.gov/)
 
