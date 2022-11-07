@@ -34,13 +34,13 @@ Descricão da primeira proposta da interface:
 - Imagem da proposta
     - Tela 1:
     
-        <img src="imgs/Tela1PropostaC.png"/>
+        <img src="imgs/Tela1PropostaC.PNG"/>
     - Tela 2:
     
-        <img src="imgs/Tela2PropostaC.png"/>
+        <img src="imgs/Tela2PropostaC.PNG"/>
     - Tela 3:
         
-        <img src="imgs/Tela3PropostaC.png"/>
+        <img src="imgs/Tela3PropostaC.PNG"/>
 - Imagem da proposta no LCD
     - Tela 1:
         
@@ -73,13 +73,13 @@ Detalhes da segunda interação da proposta de interface:
 - Imagem da proposta
     - Tela 1:
     
-        <img src="imgs/Tela1PropostaB.png"/>
+        <img src="imgs/Tela1PropostaB.PNG"/>
     - Tela 2:
     
-        <img src="imgs/Tela2PropostaB.png"/>
+        <img src="imgs/Tela2PropostaB.PNG"/>
     - Tela 3:
         
-        <img src="imgs/Tela3PropostaB.png"/>
+        <img src="imgs/Tela3PropostaB.PNG"/>
 - Imagem da proposta no LCD
     - Vídeo da entrevista com o Luis do Fablab
     - Vídeo atualizado explicando o que foi sugerido e o que fizemos para melhorar a interface:
