@@ -32,9 +32,11 @@ Nome da marca:
 Descricão da primeira proposta da interface:
 
 - Imagem da proposta
-    - Tela 1:                                           Tela 2:                                             Tela 3:
-    
-        <img src="imgs/Tela1PropostaC.PNG"/>            <img src="imgs/Tela2PropostaC.PNG"/>                <img src="imgs/Tela3PropostaC.PNG"/>
+        
+        - 
+            | Tela 1  | Tela 2 | Tela 3  |     
+            | ------------- | ------------- | ------------- |
+            | <img src="imgs/Tela1PropostaC.PNG"/>  | <img src="imgs/Tela2PropostaC.PNG"/>  | <img src="imgs/Tela3PropostaC.PNG"/> |
         
 - Imagem da proposta no LCD
     - Tela 1:
