@@ -76,7 +76,7 @@ Descricão da primeira proposta da interface:
 
 
 
-- ###Fonte
+- #### Fonte
 
 A fonte escolhida foi a *Museo Slab*, uma fonte com serifa para um visual mais clássico que não prejudica a leitura, além disso foi escolhida uma fonte com um tamanho que não impede a visualização da tela pelo ciclista durante seu trajeto, mesmo se estiver em uma velocidade elevada
 
