@@ -103,6 +103,18 @@ Detalhes da segunda interação da proposta de interface:
 </table>
 
 - Imagem da proposta no LCD
+<table>
+  <tr>
+   <td> Tela 1: </td>
+    <td> Tela 2: </td>
+     <td> Tela 3: </td>
+   </tr> 
+  <tr>
+    <td> <img src="imgs/Tela1LCDPropostaB.jpeg"  alt="1" width = 240px height = 320px ></td>
+    <td> <img src="imgs/Tela2LCDPropostaB.jpeg" alt="2" width = 240px height = 320px></td>
+    <td> <img src="imgs/Tela3LCDPropostaB.jpeg" alt="3" width = 240px height = 320px></td>
+   </tr> 
+</table>
     - Vídeo da entrevista com o Luis do Fablab
     - Vídeo atualizado explicando o que foi sugerido e o que fizemos para melhorar a interface:
 - Vídeo
