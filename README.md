@@ -32,15 +32,10 @@ Nome da marca:
 Descricão da primeira proposta da interface:
 
 - Imagem da proposta
-    - Tela 1:
+    - Tela 1:                                           Tela 2:                                             Tela 3:
     
-        <img src="imgs/Tela1PropostaC.PNG"/>
-    - Tela 2:
-    
-        <img src="imgs/Tela2PropostaC.PNG"/>
-    - Tela 3:
+        <img src="imgs/Tela1PropostaC.PNG"/>            <img src="imgs/Tela2PropostaC.PNG"/>                <img src="imgs/Tela3PropostaC.PNG"/>
         
-        <img src="imgs/Tela3PropostaC.PNG"/>
 - Imagem da proposta no LCD
     - Tela 1:
         
@@ -62,6 +57,12 @@ Descricão da primeira proposta da interface:
 >   - Grava em vídeo a entrevista
 > - Grava um vídeo atualizado explicando o que foi sugerido e o que fizeram para melhorar a interface
 > - Apresentar uma foto da interface sendo executada no LCD (imagem estática)
+
+
+
+- ####Fonte
+
+A fonte escolhida foi a *Museo Slab*, uma fonte com serifa 
 
 Detalhes da segunda interação da proposta de interface:
 
