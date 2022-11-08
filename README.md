@@ -117,7 +117,7 @@ Detalhes da segunda interação da proposta de interface:
 </table>
     - Vídeo da entrevista com o Luis do Fablab
     - Vídeo atualizado explicando o que foi sugerido e o que fizemos para melhorar a interface:
-- Vídeo
+- https://youtu.be/B2n2QCdOvOc
 
 ### Proposta UX 3 - A
 
