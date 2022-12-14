@@ -63,7 +63,7 @@ Descricão da primeira proposta da interface:
 </table>
 <br></br>
 - Vídeo explicando a interface:
-    [This is an external link to genome.gov](https://www.genome.gov/)
+    [This is an external link to genome.gov](https://youtu.be/jIUy1QjdQ7o)
 
 
 ### Proposta UX 2 - B
@@ -117,7 +117,7 @@ Detalhes da segunda interação da proposta de interface:
 </table>
     - Vídeo da entrevista com o Luis do Fablab
     - Vídeo atualizado explicando o que foi sugerido e o que fizemos para melhorar a interface:
-- Vídeo
+- https://youtu.be/B2n2QCdOvOc
 
 ### Proposta UX 3 - A
 
