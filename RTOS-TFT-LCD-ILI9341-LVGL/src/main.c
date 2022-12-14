@@ -13,6 +13,36 @@
 #include "images/Tela1PropostaB.h"
 #include "images/Tela2PropostaB.h"
 #include "images/Tela3PropostaB.h"
+#include "images/TORQLOGO.h"
+#include "images/template.h"
+#include "arm_math.h"
+
+
+
+LV_FONT_DECLARE(TitilliumWeb);
+LV_FONT_DECLARE(TitilliumWeb30);
+LV_FONT_DECLARE(locationDot);
+LV_FONT_DECLARE(TitilliumWeb20);
+
+#define MAGNET	PIOA
+#define MAGNET_ID	ID_PIOA
+#define MAGNET_IDX	19
+#define MAGNET_IDX_MASK	(1u << MAGNET_IDX)
+
+#define BUTTON	PIOA
+#define BUTTON_ID	ID_PIOA
+#define BUTTON_IDX	11
+#define BUTTON_IDX_MASK	(1u << BUTTON_IDX)
+
+typedef struct  {
+	uint32_t year;
+	uint32_t month;
+	uint32_t day;
+	uint32_t week;
+	uint32_t hour;
+	uint32_t minute;
+	uint32_t seccond;
+} calendar;
 
 /************************************************************************/
 /* LCD / LVGL                                                           */
@@ -28,13 +58,37 @@ static lv_disp_draw_buf_t disp_buf;
 static lv_color_t buf_1[LV_HOR_RES_MAX * LV_VER_RES_MAX];
 static lv_disp_drv_t disp_drv;          /*A variable to hold the drivers. Must be static or global.*/
 static lv_indev_drv_t indev_drv;
+/************************************************************************/
+/* Prototypes                                                           */
+/************************************************************************/
+
+void but_callback(void);
+void tela1(void);
+void del_tela1(void);
+void tela2(void);
+float kmh_to_hz(float vel, float raio);
+void RTC_Handler(void);
+void principal(void);
+static void RTC_init(Rtc *rtc, uint32_t id_rtc, calendar t, uint32_t irq_type);
 
 /************************************************************************/
 /* RTOS                                                                 */
 /************************************************************************/
 
+SemaphoreHandle_t xSemaphore;
+
 #define TASK_LCD_STACK_SIZE                (1024*6/sizeof(portSTACK_TYPE))
 #define TASK_LCD_STACK_PRIORITY            (tskIDLE_PRIORITY)
+
+#define TASK_SIMULATOR_STACK_SIZE (4096 / sizeof(portSTACK_TYPE))
+#define TASK_SIMULATOR_STACK_PRIORITY (tskIDLE_PRIORITY)
+
+#define RAIO 0.508/2
+#define VEL_MAX_KMH  5.0f
+#define VEL_MIN_KMH  0.5f
+#define RAMP
+
+#define LOC_DOT "\xEF\x8F\x85"
 
 extern void vApplicationStackOverflowHook(xTaskHandle *pxTask,  signed char *pcTaskName);
 extern void vApplicationIdleHook(void);
@@ -56,6 +110,164 @@ extern void vApplicationMallocFailedHook(void) {
 }
 
 /************************************************************************/
+/* VARIAVEIS LVGL                                                       */
+/************************************************************************/
+static lv_obj_t * scr1;  // screen 1
+static lv_obj_t * scr2;  // screen 2
+static lv_obj_t * scr3;  // screen 3
+
+lv_obj_t * arc;
+lv_obj_t * velocidade;
+lv_obj_t * velocidadefloat;
+lv_obj_t * velocidade2;
+lv_obj_t * velocidadefloat2;
+lv_obj_t * direcao;
+lv_obj_t * direcao2;
+lv_obj_t * cnfg;
+lv_obj_t * trajeto;
+lv_obj_t * labelTrajeto;
+lv_obj_t * labelCnfg;
+lv_obj_t * kmh;
+lv_obj_t * timeClock;
+lv_obj_t * imgLogo;
+
+lv_obj_t * dist;
+lv_obj_t * distText;
+lv_obj_t * distValor;
+lv_obj_t * velMed;
+lv_obj_t * velMedText;
+lv_obj_t * velMedValor;
+lv_obj_t * tempo;
+lv_obj_t * tempoText;
+lv_obj_t * tempoValor;
+lv_obj_t * retomar;
+lv_obj_t * labelRetomar;
+lv_obj_t * terminar;
+lv_obj_t * labelTerminar;
+lv_obj_t * reiniciar;
+lv_obj_t * labelReiniciar;
+
+lv_obj_t * cbmiles;
+lv_obj_t * cbkm;
+lv_obj_t * back;
+lv_obj_t * labelBack;
+
+
+lv_obj_t * bkgd;
+
+calendar rtc_initial = {2022, 12, 13, 50, 18, 58 ,1};
+	
+/************************************************************************/
+/* funcoes                                                              */
+/************************************************************************/
+void magnet_callback(){
+	xSemaphoreGiveFromISR(xSemaphore,0);
+}
+
+float kmh_to_hz(float vel, float raio) {
+	float f = vel / (2*PI*raio*3.6);
+	return(f);
+}
+
+void RTC_Handler(void) {
+	uint32_t ul_status = rtc_get_status(RTC);
+	
+	/* seccond tick */
+	if ((ul_status & RTC_SR_SEC) == RTC_SR_SEC) {
+		// o c?digo para irq de segundo vem aqui
+		uint32_t current_hour, current_min, current_sec;
+		rtc_get_time(RTC, &current_hour, &current_min, &current_sec);
+		lv_label_set_text_fmt(timeClock,"%02d:%02d:%02d",current_hour,current_min,current_sec);
+	}
+	
+	/* Time or date alarm */
+	if ((ul_status & RTC_SR_ALARM) == RTC_SR_ALARM) {
+		// o c?digo para irq de alame vem aqui
+	}
+
+	rtc_clear_status(RTC, RTC_SCCR_SECCLR);
+	rtc_clear_status(RTC, RTC_SCCR_ALRCLR);
+	rtc_clear_status(RTC, RTC_SCCR_ACKCLR);
+	rtc_clear_status(RTC, RTC_SCCR_TIMCLR);
+	rtc_clear_status(RTC, RTC_SCCR_CALCLR);
+	rtc_clear_status(RTC, RTC_SCCR_TDERRCLR);
+}
+
+static void RTC_init(Rtc *rtc, uint32_t id_rtc, calendar t, uint32_t irq_type) {
+	/* Configura o PMC */
+	pmc_enable_periph_clk(ID_RTC);
+
+	/* Default RTC configuration, 24-hour mode */
+	rtc_set_hour_mode(rtc, 0);
+
+	/* Configura data e hora manualmente */
+	rtc_set_date(rtc, t.year, t.month, t.day, t.week);
+	rtc_set_time(rtc, t.hour, t.minute, t.seccond);
+
+	/* Configure RTC interrupts */
+	NVIC_DisableIRQ(id_rtc);
+	NVIC_ClearPendingIRQ(id_rtc);
+	NVIC_SetPriority(id_rtc, 4);
+	NVIC_EnableIRQ(id_rtc);
+
+	/* Ativa interrupcao via alarme */
+	rtc_enable_interrupt(rtc,  irq_type);
+}
+
+void io_init(){
+	pmc_enable_periph_clk(MAGNET_ID);
+	pio_configure(MAGNET,PIO_INPUT,MAGNET_IDX_MASK,PIO_DEFAULT);
+	
+	pio_handler_set(MAGNET,
+	MAGNET_ID,
+	MAGNET_IDX_MASK,
+	PIO_IT_FALL_EDGE,
+	magnet_callback);
+	
+	pio_enable_interrupt(MAGNET,MAGNET_IDX_MASK);
+	pio_get_interrupt_status(MAGNET);
+	
+	NVIC_EnableIRQ(MAGNET_ID);
+	NVIC_SetPriority(MAGNET_ID,4);
+}
+
+static void RTT_init(float freqPrescale, uint32_t IrqNPulses, uint32_t rttIRQSource) {
+
+	uint16_t pllPreScale = (int) (((float) 32768) / freqPrescale);
+	
+	rtt_sel_source(RTT, false);
+	rtt_init(RTT, pllPreScale);
+	
+	if (rttIRQSource & RTT_MR_ALMIEN) {
+		uint32_t ul_previous_time;
+		ul_previous_time = rtt_read_timer_value(RTT);
+		while (ul_previous_time == rtt_read_timer_value(RTT));
+		rtt_write_alarm_time(RTT, IrqNPulses+ul_previous_time);
+	}
+
+	/* config NVIC */
+	NVIC_DisableIRQ(RTT_IRQn);
+	NVIC_ClearPendingIRQ(RTT_IRQn);
+	NVIC_SetPriority(RTT_IRQn, 4);
+	NVIC_EnableIRQ(RTT_IRQn);
+
+	/* Enable RTT interrupt */
+	if (rttIRQSource & (RTT_MR_RTTINCIEN | RTT_MR_ALMIEN))
+	rtt_enable_interrupt(RTT, rttIRQSource);
+	else
+	rtt_disable_interrupt(RTT, RTT_MR_RTTINCIEN | RTT_MR_ALMIEN);
+}
+
+void RTT_Handler(void) {
+	uint32_t ul_status;
+	ul_status = rtt_get_status(RTT);
+
+	/* IRQ due to Alarm */
+	if ((ul_status & RTT_SR_ALMS) == RTT_SR_ALMS) {
+	}
+}
+
+/************************************************************************/
 /* lvgl                                                                 */
 /************************************************************************/
 
@@ -70,30 +282,348 @@ static void event_handler(lv_event_t * e) {
 	}
 }
 
-void lv_ex_btn_1(void) {
-// 	lv_obj_t * label;
-// 
-// 	lv_obj_t * btn1 = lv_btn_create(lv_scr_act());
-// 	lv_obj_add_event_cb(btn1, event_handler, LV_EVENT_ALL, NULL);
-// 	lv_obj_align(btn1, LV_ALIGN_CENTER, 0, -40);
-// 
-// 	label = lv_label_create(btn1);
-// 	lv_label_set_text(label, "Corsi");
-// 	lv_obj_center(label);
-// 
-// 	lv_obj_t * btn2 = lv_btn_create(lv_scr_act());
-// 	lv_obj_add_event_cb(btn2, event_handler, LV_EVENT_ALL, NULL);
-// 	lv_obj_align(btn2, LV_ALIGN_CENTER, 0, 40);
-// 	lv_obj_add_flag(btn2, LV_OBJ_FLAG_CHECKABLE);
-// 	lv_obj_set_height(btn2, LV_SIZE_CONTENT);
-// 
-// 	label = lv_label_create(btn2);
-// 	lv_label_set_text(label, "Toggle");
-// 	lv_obj_center(label);
-	lv_obj_t * img = lv_img_create(lv_scr_act());
-	lv_img_set_src(img,&Tela3PropostaB);
-	lv_obj_align(img, LV_ALIGN_CENTER, 0, 0);
+static void eh_trajeto (lv_event_t * e) {
+	lv_event_code_t code = lv_event_get_code(e);
+
+	if(code == LV_EVENT_CLICKED) {
+		printf("clicado");
+ 		lv_obj_set_parent(timeClock,scr2);
+		lv_scr_load(scr2);
+		lv_obj_align(timeClock,LV_ALIGN_BOTTOM_MID,0,-5);
+		
+	}
 }
+
+static void eh_cnfg (lv_event_t * e) {
+	lv_event_code_t code = lv_event_get_code(e);
+
+	
+	if(code == LV_EVENT_CLICKED) {
+		printf("clicado");
+		lv_obj_set_parent(timeClock,scr3);
+		lv_scr_load(scr3);
+		lv_obj_align(timeClock,LV_ALIGN_BOTTOM_MID,0,-5);
+	}
+}
+
+static void eh_voltar (lv_event_t * e) {
+	lv_event_code_t code = lv_event_get_code(e);
+
+	
+	if(code == LV_EVENT_CLICKED) {
+		printf("clicado");
+		lv_obj_set_parent(timeClock,scr1);
+		lv_scr_load(scr1);
+		lv_obj_align(timeClock,LV_ALIGN_BOTTOM_MID,0,-5);
+	}
+}
+
+int mkm=1;
+int mm=0;
+static void eh_cbkm (lv_event_t * e) {
+	lv_event_code_t code = lv_event_get_code(e);
+	
+	if(code == LV_EVENT_VALUE_CHANGED) {
+		if(!mkm){
+			mkm=1;
+			mm=0;
+			lv_obj_add_state(cbkm, LV_STATE_CHECKED);
+			lv_obj_clear_state(cbmiles, LV_STATE_CHECKED);
+		}else{
+			lv_obj_add_state(cbkm, LV_STATE_CHECKED);
+		}
+	}
+}
+
+static void eh_cbmilesh (lv_event_t * e) {
+	lv_event_code_t code = lv_event_get_code(e);
+
+	if(code == LV_EVENT_VALUE_CHANGED) {
+		if(!mm){
+			mm=1;
+			mkm=0;
+			lv_obj_add_state(cbmiles, LV_STATE_CHECKED);
+			lv_obj_clear_state(cbkm, LV_STATE_CHECKED);
+		}else{
+			lv_obj_add_state(cbmiles, LV_STATE_CHECKED);
+		}
+	}
+}
+
+void principal(void){
+	timeClock = lv_label_create(lv_scr_act());
+	lv_obj_align(timeClock,LV_ALIGN_BOTTOM_MID,0,-5);
+	lv_obj_set_style_text_font(timeClock, &TitilliumWeb20 , LV_STATE_DEFAULT);
+	lv_obj_set_style_text_color(timeClock, lv_color_black(), LV_STATE_DEFAULT);
+	
+// 	imgLogo = lv_img_create(lv_scr_act());
+// 	lv_img_set_src(imgLogo, &TORQLOGO);
+// 	lv_img_set_zoom(imgLogo,100);
+// 	lv_obj_align(imgLogo,LV_ALIGN_TOP_MID, 0, -50);
+}
+
+void tela1(void) {
+	static lv_style_t stylebtn;
+	lv_style_init(&stylebtn);
+	lv_style_set_bg_color(&stylebtn, lv_color_white());
+	lv_style_set_text_color(&stylebtn, lv_color_black());
+	lv_style_set_border_width(&stylebtn, 0);
+	lv_style_set_shadow_width(&stylebtn,0);
+	
+	bkgd = lv_img_create(scr1);
+	lv_img_set_src(bkgd, &template);
+	lv_obj_align(bkgd, LV_ALIGN_CENTER, 0, 0);
+	lv_obj_move_background(bkgd);
+
+	int valor = 0;
+	velocidade = lv_label_create(scr1);
+	lv_obj_align(velocidade,LV_ALIGN_CENTER,0,-50);
+	lv_obj_set_style_text_font(velocidade, &TitilliumWeb , LV_STATE_DEFAULT);
+	lv_obj_set_style_text_color(velocidade, lv_color_black(), LV_STATE_DEFAULT);
+	lv_label_set_text_fmt(velocidade,"%d.",valor);
+	
+	int valorFloat = 0;
+	velocidadefloat = lv_label_create(scr1);
+	lv_obj_align(velocidadefloat,LV_ALIGN_CENTER,40,-50);
+	lv_obj_set_style_text_font(velocidadefloat, &TitilliumWeb , LV_STATE_DEFAULT);
+	lv_obj_set_style_text_color(velocidadefloat, lv_color_black(), LV_STATE_DEFAULT);
+	lv_label_set_text_fmt(velocidadefloat,"%d",valorFloat);
+	
+	kmh = lv_label_create(scr1);
+	lv_obj_align(kmh,LV_ALIGN_CENTER,0,0);
+	lv_obj_set_style_text_font(kmh, &TitilliumWeb30 , LV_STATE_DEFAULT);
+	lv_obj_set_style_text_color(kmh, lv_color_black(), LV_STATE_DEFAULT);
+	lv_label_set_text(kmh,"Km/h");
+	
+	direcao = lv_label_create(scr1);
+	lv_obj_align_to(direcao,velocidade,LV_ALIGN_LEFT_MID,-25,0);
+	lv_obj_set_style_text_font(direcao, LV_FONT_DEFAULT , LV_STATE_DEFAULT);
+	lv_obj_set_style_text_color(direcao, lv_color_black(), LV_STATE_DEFAULT);
+	lv_label_set_text(direcao,LV_SYMBOL_MINUS);
+	
+	trajeto = lv_btn_create(scr1);
+	lv_obj_add_event_cb(trajeto, eh_trajeto, LV_EVENT_ALL, NULL);
+	lv_obj_align(trajeto,LV_ALIGN_BOTTOM_LEFT,50,-40);
+	lv_obj_set_width(trajeto, 50);
+	lv_obj_set_height(trajeto, 50);
+	
+	labelTrajeto = lv_label_create(trajeto);
+	lv_label_set_text(labelTrajeto, LV_SYMBOL_PLAY);
+	lv_obj_center(labelTrajeto);
+	lv_obj_add_style(trajeto,&stylebtn,0);
+	
+	cnfg = lv_btn_create(scr1);
+	lv_obj_add_event_cb(cnfg, eh_cnfg, LV_EVENT_ALL, NULL);
+	lv_obj_align(cnfg,LV_ALIGN_BOTTOM_RIGHT,-50,-40);
+	lv_obj_set_width(cnfg, 50);
+	lv_obj_set_height(cnfg, 50);
+	
+	labelCnfg = lv_label_create(cnfg);
+	lv_label_set_text(labelCnfg, LV_SYMBOL_SETTINGS);
+	lv_obj_center(labelCnfg);
+	lv_obj_add_style(cnfg,&stylebtn,0);
+}
+
+void tela2(void){	
+	//LINHAS
+	static lv_point_t line1_points[] = { {5,0},{235,0}};
+	static lv_point_t line2_points[] = { {5,65},{235,65}};
+	static lv_point_t line3_points[] = { {5,140},{235,140}};
+	
+	bkgd = lv_img_create(scr2);
+	lv_img_set_src(bkgd, &template);
+	lv_obj_align(bkgd, LV_ALIGN_CENTER, 0, 0);
+	lv_obj_move_background(bkgd);
+	
+	static lv_style_t style_line;
+	lv_style_init(&style_line);
+	lv_style_set_line_width(&style_line,3);
+	lv_style_set_line_color(&style_line,lv_color_black());
+	lv_style_set_line_rounded(&style_line, false);
+	
+	lv_obj_t * line1;
+	line1 = lv_line_create(scr2);
+	lv_line_set_points(line1, line1_points,2);     /*Set the points*/
+	lv_obj_add_style(line1, &style_line,0);     /*Set the points*/
+	lv_obj_align(line1,LV_ALIGN_CENTER, 0, 0);
+	
+	lv_obj_t * line2;
+	line2 = lv_line_create(scr2);
+	lv_line_set_points(line2, line2_points,2);     /*Set the points*/
+	lv_obj_add_style(line2, &style_line,0);     /*Set the points*/
+	lv_obj_align(line2,LV_ALIGN_CENTER, 0, 0);
+	
+	lv_obj_t * line3;
+	line3 = lv_line_create(scr2);
+	lv_line_set_points(line3, line3_points,2);     /*Set the points*/
+	lv_obj_add_style(line3, &style_line,0);     /*Set the points*/
+	lv_obj_align(line3,LV_ALIGN_CENTER, 0, 0);
+	
+	// Estilo do botão
+	static lv_style_t style;
+	lv_style_init(&style);
+	lv_style_set_bg_color(&style, lv_color_white());
+	lv_style_set_text_color(&style, lv_color_black());
+	lv_style_set_border_width(&style, 0);
+	lv_style_set_shadow_width(&style,0);
+		
+	direcao2 = lv_label_create(scr2);
+	lv_obj_align(direcao2,LV_ALIGN_CENTER,-35,-70);
+	lv_obj_set_style_text_font(direcao2, LV_FONT_DEFAULT , LV_STATE_DEFAULT);
+	lv_obj_set_style_text_color(direcao2, lv_color_black(), LV_STATE_DEFAULT);
+	lv_label_set_text(direcao2,LV_SYMBOL_MINUS);
+	
+	int valor = 0;
+	velocidade2 = lv_label_create(scr2);
+	lv_obj_align(velocidade2,LV_ALIGN_CENTER,-10,-70);
+	lv_obj_set_style_text_font(velocidade2, &TitilliumWeb20 , LV_STATE_DEFAULT);
+	lv_obj_set_style_text_color(velocidade2, lv_color_black(), LV_STATE_DEFAULT);
+	lv_label_set_text_fmt(velocidade2,"%d.",valor);
+	
+	int valorFloat = 0;
+	velocidadefloat2 = lv_label_create(scr2);
+	lv_obj_align(velocidadefloat2,LV_ALIGN_CENTER,10,-70);
+	lv_obj_set_style_text_font(velocidadefloat2, &TitilliumWeb20 , LV_STATE_DEFAULT);
+	lv_obj_set_style_text_color(velocidadefloat2, lv_color_black(), LV_STATE_DEFAULT);
+	lv_label_set_text_fmt(velocidadefloat2,"%d",valorFloat);
+	
+	kmh = lv_label_create(scr2);
+	lv_obj_align(kmh,LV_ALIGN_CENTER,0,-50);
+	lv_obj_set_style_text_font(kmh, &TitilliumWeb20 , LV_STATE_DEFAULT);
+	lv_obj_set_style_text_color(kmh, lv_color_black(), LV_STATE_DEFAULT);
+	lv_label_set_text(kmh,"Km/h");
+	
+	dist = lv_label_create(scr2);
+	lv_obj_align(dist,LV_ALIGN_LEFT_MID,15,-20);
+	lv_obj_set_style_text_font(dist, &locationDot , LV_STATE_DEFAULT);
+	lv_obj_set_style_text_color(dist, lv_color_black(), LV_STATE_DEFAULT);
+	lv_label_set_text(dist,LOC_DOT);
+	
+	distText = lv_label_create(scr2);
+	lv_obj_align(distText,LV_ALIGN_LEFT_MID,40,-20);
+	lv_obj_set_style_text_font(distText, &TitilliumWeb20 , LV_STATE_DEFAULT);
+	lv_obj_set_style_text_color(distText, lv_color_black(), LV_STATE_DEFAULT);
+	lv_label_set_text(distText,"Dist");
+	
+	velMed = lv_label_create(scr2);
+	lv_obj_align(velMed,LV_ALIGN_LEFT_MID,15,15);
+	lv_obj_set_style_text_font(velMed, LV_FONT_DEFAULT , LV_STATE_DEFAULT);
+	lv_obj_set_style_text_color(velMed, lv_color_black(), LV_STATE_DEFAULT);
+	lv_label_set_text(velMed,LV_SYMBOL_CHARGE);
+	
+	velMedText = lv_label_create(scr2);
+	lv_obj_align(velMedText,LV_ALIGN_LEFT_MID,40,15);
+	lv_obj_set_style_text_font(velMedText, &TitilliumWeb20 , LV_STATE_DEFAULT);
+	lv_obj_set_style_text_color(velMedText, lv_color_black(), LV_STATE_DEFAULT);
+	lv_label_set_text(velMedText,"Vel.Med");
+	
+	tempo = lv_label_create(scr2);
+	lv_obj_align(tempo,LV_ALIGN_LEFT_MID,15,50);
+	lv_obj_set_style_text_font(tempo, LV_FONT_DEFAULT , LV_STATE_DEFAULT);
+	lv_obj_set_style_text_color(tempo, lv_color_black(), LV_STATE_DEFAULT);
+	lv_label_set_text(tempo,LV_SYMBOL_BELL);
+	
+	tempoText = lv_label_create(scr2);
+	lv_obj_align(tempoText,LV_ALIGN_LEFT_MID,40,50);
+	lv_obj_set_style_text_font(tempoText, &TitilliumWeb20 , LV_STATE_DEFAULT);
+	lv_obj_set_style_text_color(tempoText, lv_color_black(), LV_STATE_DEFAULT);
+	lv_label_set_text(tempoText,"Tempo");
+	
+	retomar = lv_btn_create(scr2);
+	lv_obj_align(retomar,LV_ALIGN_BOTTOM_LEFT,30,-30);
+	lv_obj_set_width(retomar, 50);
+	lv_obj_set_height(retomar, 50);
+	lv_obj_add_style(retomar, &style, 0);
+	
+	labelRetomar = lv_label_create(retomar);
+	lv_label_set_text(labelRetomar, LV_SYMBOL_PAUSE);
+	lv_obj_center(labelRetomar);
+	
+	terminar = lv_btn_create(scr2);
+	lv_obj_add_event_cb(terminar, eh_voltar, LV_EVENT_ALL, NULL);
+	lv_obj_align(terminar,LV_ALIGN_BOTTOM_MID,0,-30);
+	lv_obj_set_width(terminar, 50);
+	lv_obj_set_height(terminar, 50);
+	lv_obj_add_style(terminar, &style, 0);
+	
+	labelTerminar = lv_label_create(terminar);
+	lv_label_set_text(labelTerminar, LV_SYMBOL_STOP);
+	lv_obj_center(labelTerminar);
+	
+	reiniciar = lv_btn_create(scr2);
+	lv_obj_align(reiniciar,LV_ALIGN_BOTTOM_RIGHT,-30,-30);
+	lv_obj_set_width(reiniciar, 50);
+	lv_obj_set_height(reiniciar, 50);
+	lv_obj_add_style(reiniciar, &style, 0);
+	
+	labelReiniciar = lv_label_create(reiniciar);
+	lv_label_set_text(labelReiniciar, LV_SYMBOL_REFRESH);
+	lv_obj_center(labelReiniciar);
+	
+}
+
+void tela3(void){
+	lv_obj_t * labelRoda;
+	lv_obj_t * labelMedida;
+	lv_obj_t * milesh;	
+	lv_obj_t * dropdown;
+	
+	// Estilo do botão
+	static lv_style_t styles;
+	lv_style_init(&styles);
+	lv_style_set_bg_color(&styles, lv_color_white());
+	lv_style_set_text_color(&styles, lv_color_black());
+	lv_style_set_border_width(&styles, 0);
+	lv_style_set_shadow_width(&styles,0);
+	
+	bkgd = lv_img_create(scr3);
+	lv_img_set_src(bkgd, &template);
+	lv_obj_align(bkgd, LV_ALIGN_CENTER, 0, 0);
+	lv_obj_move_background(bkgd);
+	
+	labelRoda = lv_label_create(scr3);
+	lv_obj_align(labelRoda,LV_ALIGN_TOP_MID,-10,50);
+	lv_obj_set_style_text_font(labelRoda, &TitilliumWeb30 , LV_STATE_DEFAULT);
+	lv_obj_set_style_text_color(labelRoda, lv_color_black(), LV_STATE_DEFAULT);
+	lv_label_set_text(labelRoda,"Tamanho da roda");
+	
+	labelMedida = lv_label_create(scr3);
+	lv_obj_align(labelMedida,LV_ALIGN_LEFT_MID,10,40);
+	lv_obj_set_style_text_font(labelMedida, &TitilliumWeb30 , LV_STATE_DEFAULT);
+	lv_obj_set_style_text_color(labelMedida, lv_color_black(), LV_STATE_DEFAULT);
+	lv_label_set_text(labelMedida,"Medida");
+	
+	cbkm = lv_checkbox_create(scr3);
+	lv_checkbox_set_text(cbkm,"Km/h");
+	lv_obj_align(cbkm,LV_ALIGN_BOTTOM_LEFT,0,-40);
+	lv_obj_add_event_cb(cbkm,eh_cbkm, LV_EVENT_ALL, NULL);
+	lv_obj_add_state(cbkm, LV_STATE_CHECKED);  
+	
+	cbmiles = lv_checkbox_create(scr3);
+	lv_checkbox_set_text(cbmiles,"miles/h");
+	lv_obj_align(cbmiles,LV_ALIGN_BOTTOM_RIGHT,0,-40);
+	lv_obj_add_event_cb(cbmiles,eh_cbmilesh, LV_EVENT_ALL, NULL);
+	
+	dropdown = lv_dropdown_create(scr3);
+	lv_dropdown_set_options(dropdown,"29\n"
+		"30\n"
+		"31");
+		
+	lv_obj_align(dropdown,LV_ALIGN_CENTER,-20,-40);
+	
+	back = lv_btn_create(scr3);
+	lv_obj_add_event_cb(back, eh_voltar, LV_EVENT_ALL, NULL);
+	lv_obj_align(back,LV_ALIGN_TOP_LEFT,0,10);
+	lv_obj_set_width(back, 20);
+	lv_obj_set_height(back, 20);
+	lv_obj_add_style(back,&styles,0);
+	
+	labelBack = lv_label_create(back);
+	lv_label_set_text(labelBack, LV_SYMBOL_LEFT);
+	lv_obj_center(labelBack);
+
+}
+
 
 /************************************************************************/
 /* TASKS                                                                */
@@ -101,13 +631,103 @@ void lv_ex_btn_1(void) {
 
 static void task_lcd(void *pvParameters) {
 	int px, py;
-
-	lv_ex_btn_1();
-
+	io_init();
+	scr1 = lv_obj_create(NULL);
+	scr2 = lv_obj_create(NULL);
+	scr3 = lv_obj_create(NULL);
+	lv_scr_load(scr1);
+	tela1();
+	tela2();
+	tela3();
+	principal();
+	RTC_init(RTC, ID_RTC, rtc_initial, RTC_IER_SECEN);
+	
 	for (;;)  {
 		lv_tick_inc(50);
 		lv_task_handler();
 		vTaskDelay(50);
+	}
+}
+
+static void task_time(void *pvParameters){
+	RTT_init(100,0,NULL);
+	uint32_t ciclos = 0;
+	float dt = 0;
+	float w = 0;
+	float f = 0;
+	float d = 0;
+	float r =  0.508/2;
+	float v = 0;
+	float t_total = 0;
+	float vi = 0;
+	
+	for (;;){
+		if(xSemaphoreTake(xSemaphore,0)){
+			ciclos = rtt_read_timer_value(RTT);
+			RTT_init(100,0,NULL);
+			dt = ciclos*0.01;
+			f = 1/dt;
+			w = 2*PI*f;
+			v = w*r*3.6;
+			
+			if(v-vi>0.0000001){
+				lv_label_set_text(direcao,LV_SYMBOL_UP);
+				lv_label_set_text(direcao2,LV_SYMBOL_UP);
+				printf("CIMA\n");
+			}else if (vi-v>0.0000001){
+				lv_label_set_text(direcao, LV_SYMBOL_DOWN);
+				lv_label_set_text(direcao2, LV_SYMBOL_DOWN);
+				printf("BAIXO\n");
+			}else{
+				lv_label_set_text(direcao, LV_SYMBOL_MINUS);
+				lv_label_set_text(direcao2, LV_SYMBOL_MINUS);
+				printf("CONTINUA\n");
+			}
+			
+			lv_label_set_text_fmt(velocidade,"  %d.",(uint32_t)v);
+			lv_label_set_text_fmt(velocidadefloat,"%d",((uint32_t)(v * 10)) % 10);
+			lv_label_set_text_fmt(velocidade2,"  %d.",(uint32_t)v);
+			lv_label_set_text_fmt(velocidadefloat2,"%d",((uint32_t)(v * 10)) % 10);
+			printf("Velocidade: %d\n",(uint32_t)v);
+			printf("VelocidadeFloat: %d\n",((uint32_t)(v * 10)) % 10);
+			vi = v;
+		}
+	}
+}
+
+static void task_simulador(void *pvParameters) {
+	pmc_enable_periph_clk(ID_PIOC);
+	pio_set_output(PIOC, PIO_PC31, 1, 0, 0);
+
+	float vel = VEL_MAX_KMH;
+	float f;
+	int ramp_up = 1;
+
+	while(1){
+		pio_clear(PIOC, PIO_PC31);
+		delay_ms(1);
+		pio_set(PIOC, PIO_PC31);
+
+		if (ramp_up) {
+			printf("[SIMU] ACELERANDO: %d \n", (int) (10*vel));
+			vel += 0.5;
+			} else {
+			printf("[SIMU] DESACELERANDO: %d \n",  (int) (10*vel));
+			vel -= 0.5;
+		}
+
+		if (vel >= VEL_MAX_KMH)
+		ramp_up = 0;
+		else if (vel <= VEL_MIN_KMH)
+		ramp_up = 1;
+		
+		vel = 5;
+		printf("[SIMU] CONSTANTE: %d \n", (int) (10*vel));
+
+		f = kmh_to_hz(vel, RAIO);
+		int t = 965*(1.0/f); //UTILIZADO 965 como multiplicador ao invés de 1000
+		//para compensar o atraso gerado pelo Escalonador do freeRTOS
+		delay_ms(t);
 	}
 }
 
@@ -202,10 +822,20 @@ int main(void) {
 	ili9341_set_orientation(ILI9341_FLIP_Y | ILI9341_SWITCH_XY);
 	configure_touch();
 	configure_lvgl();
-
+	
+	xSemaphore = xSemaphoreCreateBinary();
+	
 	/* Create task to control oled */
 	if (xTaskCreate(task_lcd, "LCD", TASK_LCD_STACK_SIZE, NULL, TASK_LCD_STACK_PRIORITY, NULL) != pdPASS) {
 		printf("Failed to create lcd task\r\n");
+	}
+	
+// 	if (xTaskCreate(task_simulador, "SIMUL", TASK_SIMULATOR_STACK_SIZE, NULL, TASK_SIMULATOR_STACK_PRIORITY, NULL) != pdPASS) {
+// 		printf("Failed to create lcd task\r\n");
+// 	}
+
+	if (xTaskCreate(task_time, "TIME", TASK_LCD_STACK_SIZE, NULL, TASK_LCD_STACK_PRIORITY, NULL) != pdPASS) {
+		printf("Failed to create time task\r\n");
 	}
 	
 	/* Start the scheduler. */
