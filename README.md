@@ -10,12 +10,13 @@ Mais detalhes no site da disciplina:
 
 Integrantes:
 
-- Nome 
-- Nome
+- Pedro Altobelli Teixeira Pinto 
+- Willian Kenzo
+- Arthur Carvalho
 
 Nome da marca:
 
-- Nome e logo?
+<img src="imgs/Simbolo.png"/>
 
 ## Interface
 
@@ -31,8 +32,39 @@ Nome da marca:
 Descricão da primeira proposta da interface:
 
 - Imagem da proposta
+            
+ <table>
+  <tr>
+   <td> Tela 1: </td>
+    <td> Tela 2: </td>
+     <td> Tela 3: </td>
+   </tr> 
+  <tr>
+    <td> <img src="imgs/Tela1PropostaC.PNG"  alt="1" width = 240px height = 320px ></td>
+    <td> <img src="imgs/Tela2PropostaC.PNG" alt="2" width = 240px height = 320px></td>
+     <td> <img src="imgs/Tela3PropostaC.PNG" alt="3" width = 240px height = 320px></td>
+   </tr> 
+</table>
+        
+<br></br>
+        
 - Imagem da proposta no LCD
-- Vídeo explicando a interface
+<table>
+  <tr>
+   <td> Tela 1: </td>
+    <td> Tela 2: </td>
+     <td> Tela 3: </td>
+   </tr> 
+  <tr>
+    <td> <img src="imgs/Tela1LCDPropostaC.png"  alt="1" width = 240px height = 320px ></td>
+    <td> <img src="imgs/Tela2LCDPropostaC.png" alt="2" width = 240px height = 320px></td>
+     <td> <img src="imgs/Tela3LCDPropostaC.png" alt="3" width = 240px height = 320px></td>
+   </tr> 
+</table>
+<br></br>
+- Vídeo explicando a interface:
+    [This is an external link to genome.gov](https://youtu.be/jIUy1QjdQ7o)
+
 
 ### Proposta UX 2 - B
 
@@ -42,6 +74,12 @@ Descricão da primeira proposta da interface:
 > - Grava um vídeo atualizado explicando o que foi sugerido e o que fizeram para melhorar a interface
 > - Apresentar uma foto da interface sendo executada no LCD (imagem estática)
 
+
+
+- #### Fonte
+
+A fonte escolhida foi a *Museo Slab*, uma fonte com serifa para um visual mais clássico que não prejudica a leitura, além disso foi escolhida uma fonte com um tamanho que não impede a visualização da tela pelo ciclista durante seu trajeto, mesmo se estiver em uma velocidade elevada
+
 Detalhes da segunda interação da proposta de interface:
 
 <!-- 
@@ -50,8 +88,36 @@ Detalhes da segunda interação da proposta de interface:
 -->
 
 - Imagem da proposta
+
+<table>
+  <tr>
+   <td> Tela 1: </td>
+    <td> Tela 2: </td>
+     <td> Tela 3: </td>
+   </tr> 
+  <tr>
+    <td> <img src="imgs/Tela1PropostaB.PNG"  alt="1" width = 240px height = 320px ></td>
+    <td> <img src="imgs/Tela2PropostaB.PNG" alt="2" width = 240px height = 320px></td>
+     <td> <img src="imgs/Tela3PropostaB.PNG" alt="3" width = 240px height = 320px></td>
+   </tr> 
+</table>
+
 - Imagem da proposta no LCD
-- Vídeo
+<table>
+  <tr>
+   <td> Tela 1: </td>
+    <td> Tela 2: </td>
+     <td> Tela 3: </td>
+   </tr> 
+  <tr>
+    <td> <img src="imgs/Tela1LCDPropostaB.jpeg"  alt="1" width = 240px height = 320px ></td>
+    <td> <img src="imgs/Tela2LCDPropostaB.jpeg" alt="2" width = 240px height = 320px></td>
+    <td> <img src="imgs/Tela3LCDPropostaB.jpeg" alt="3" width = 240px height = 320px></td>
+   </tr> 
+</table>
+    - Vídeo da entrevista com o Luis do Fablab
+    - Vídeo atualizado explicando o que foi sugerido e o que fizemos para melhorar a interface:
+- https://youtu.be/B2n2QCdOvOc
 
 ### Proposta UX 3 - A
 
